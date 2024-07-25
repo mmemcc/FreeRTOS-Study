@@ -9,47 +9,61 @@
 /* FreeRTOS kernel includes. */
 #include "FreeRTOS.h"
 #include "task.h"
+#include "semphr.h"
 
 /* Local includes. */
 #include "console.h" // posix 환경에서 console을 사용하기 위한 헤더파일. printf 대신 사용
 
 // Simulation of the CPU hardware sleeping mode
 // Idle task hook, 지우면 안됨
-void vApplicationIdleHook( void )
+void vApplicationIdleHook(void)
 {
-    usleep( 15000 );
+	usleep(15000);
 }
 
-// Task 1 정의
-void vTask1( void *pvParameters )
-{
-	const char *pcTaskName = "Task 1 is running\r\n";
+SemaphoreHandle_t xMutex;
 
-	for( ;; )
-	{
-		console_print( pcTaskName );
-        vTaskDelay( 1000 );
-	}
-}
-// Task 2 정의
-void vTask2( void *pvParameters )
+static void PrintTask1(void *pvParameters)
 {
-	const char *pcTaskName = "Task 2 is running\r\n";
-
-	for( ;; )
+	char *pcStringToPrint;
+	pcStringToPrint = (char *)pvParameters;
+	for (;;)
 	{
-		console_print( pcTaskName );
-        vTaskDelay( 1000 );
+		xSemaphoreTake(xMutex, portMAX_DELAY);
+
+		console_print("%s", pcStringToPrint);
+		fflush(stdout);
+		vTaskDelay(pdMS_TO_TICKS(1000));
+
+		xSemaphoreGive(xMutex);
 	}
 }
 
-int main( void )
+static void PrintTask2(void *pvParameters)
 {
-    console_init(); 
+	const char *pcStringToPrint;
+	pcStringToPrint = (char *)pvParameters;
+	for (;;)
+	{
+		xSemaphoreTake(xMutex, portMAX_DELAY);
+		console_print("%s", pcStringToPrint);
+		xSemaphoreGive(xMutex);
+		vTaskDelay(pdMS_TO_TICKS(1));
+	}
+}
 
-	xTaskCreate( vTask1, "Task 1", configMINIMAL_STACK_SIZE, NULL, 1, NULL );
-	xTaskCreate( vTask2, "Task 2", configMINIMAL_STACK_SIZE, NULL, 1, NULL );
-    
-	vTaskStartScheduler();
-	for( ;; );
+int main(void)
+{
+	console_init();
+
+	xMutex = xSemaphoreCreateMutex();
+	if (xMutex != NULL)
+	{
+		xTaskCreate(PrintTask1, "Print1", configMINIMAL_STACK_SIZE, "Task 1 ***************************************\r\n", 1, NULL);
+		xTaskCreate(PrintTask2, "Print2", configMINIMAL_STACK_SIZE, "Task 2 ---------------------------------------\r\n", 2, NULL);
+
+		vTaskStartScheduler();
+	}
+	for (;;)
+		;
 }
