@@ -64,6 +64,5 @@ int main(void)
 
 		vTaskStartScheduler();
 	}
-	for (;;)
-		;
+	for (;;);
 }
