@@ -34,6 +34,8 @@
 #include <FreeRTOS.h>
 #include <semphr.h>
 
+#include <console.h>
+
 SemaphoreHandle_t xStdioMutex;
 
 void console_init( void )
@@ -57,3 +59,18 @@ void console_print( const char * fmt,
     va_end( vargs );
 }
 
+void console_scanf( const char * fmt,
+                    ... )
+{
+    va_list vargs;
+
+    va_start( vargs, fmt );
+
+    xSemaphoreTake( xStdioMutex, portMAX_DELAY );
+
+    vscanf( fmt, vargs );
+
+    xSemaphoreGive( xStdioMutex );
+
+    va_end( vargs );
+}

@@ -13,6 +13,7 @@ INCLUDE_DIRS          := -I.
 INCLUDE_DIRS          += -I${KERNEL_DIR}/include
 INCLUDE_DIRS          += -I${KERNEL_DIR}/portable/ThirdParty/GCC/Posix
 INCLUDE_DIRS          += -I${KERNEL_DIR}/portable/ThirdParty/GCC/Posix/utils
+INCLUDE_DIRS          += -Ilib/include
 
 SOURCE_FILES           := $(wildcard *.c)
 SOURCE_FILES          += $(wildcard ${FREERTOS_DIR}/Source/*.c)
@@ -21,6 +22,7 @@ SOURCE_FILES          += ${KERNEL_DIR}/portable/MemMang/heap_3.c
 # posix port
 SOURCE_FILES          += ${KERNEL_DIR}/portable/ThirdParty/GCC/Posix/utils/wait_for_event.c
 SOURCE_FILES          += ${KERNEL_DIR}/portable/ThirdParty/GCC/Posix/port.c
+SOURCE_FILES		  += $(wildcard lib/src/*.c)
 
 CFLAGS                :=    -ggdb3
 LDFLAGS               :=    -ggdb3 -pthread

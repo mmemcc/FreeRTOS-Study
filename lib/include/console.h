@@ -38,6 +38,8 @@
     void console_init( void );
     void console_print( const char * fmt,
                         ... );
+    void console_scanf( const char * fmt,
+                        ... );
 
     #ifdef __cplusplus
         }

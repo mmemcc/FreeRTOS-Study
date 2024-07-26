@@ -11,7 +11,7 @@
 #include "task.h"
 
 /* Local includes. */
-#include "console.h" // posix 환경에서 console을 사용하기 위한 헤더파일. printf 대신 사용
+#include <console.h> // posix 환경에서 console을 사용하기 위한 헤더파일. printf 대신 사용
 
 // Simulation of the CPU hardware sleeping mode
 // Idle task hook, 지우면 안됨
